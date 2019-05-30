@@ -1,0 +1,13 @@
+<resources>
+	<string name="app_name">GestionPersonnage</string>
+	<string name="reset">reset</string>
+	<string name="add">add</string>
+	<string name="edit">edit</string>
+	<string name="confirm">confirm</string>
+	<string name="cancel">cancel</string>
+	<string name="name">Name:</string>
+	<string name="default_value">Default value:</string>
+	<string name="minimal_value">Minimal value:</string>
+	<string name="maximal_value">Maximal value:</string>
+	<string name="new_field">New Field</string>
+</resources>
