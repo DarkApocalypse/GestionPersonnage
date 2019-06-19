@@ -8,13 +8,16 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 
 public class EditDialog extends DialogFragment {
 	public static final String ARG_NAME = "EditDialog.name";
 	private String name, defaults, min, max;
+	private String visible;
 
 	public EditDialog() {
 		super();
@@ -33,6 +36,7 @@ public class EditDialog extends DialogFragment {
 		defaults = "";
 		min = "";
 		max = "";
+		visible = "";
 	}
 
 	@NonNull
@@ -46,13 +50,29 @@ public class EditDialog extends DialogFragment {
 		LayoutInflater inflater = (LayoutInflater)getActivity().getBaseContext() .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		View view = inflater.inflate(R.layout.edit, null);
 		EditText edit;
+		CheckBox cb;
 
 		edit = (EditText)view.findViewById(R.id.edit_default);
-		edit.setText(defaults);
+		if(defaults!=null && !defaults.isEmpty() && !defaults.equals("null"))
+			edit.setText(defaults);
+		else
+			edit.setText("");
 		edit = (EditText)view.findViewById(R.id.edit_min);
-		edit.setText(min);
+		if(min!=null && !min.isEmpty() && !min.equals("null"))
+			edit.setText(min);
+		else
+			edit.setText("");
 		edit = (EditText)view.findViewById(R.id.edit_max);
-		edit.setText(max);
+		if(max!=null && !max.isEmpty() && !max.equals("null"))
+			edit.setText(max);
+		else
+			edit.setText("");
+		cb = (CheckBox)view.findViewById(R.id.check_default);
+		cb.setChecked(visible.contains("default"));
+		cb = (CheckBox)view.findViewById(R.id.check_minimal);
+		cb.setChecked(visible.contains("minimal"));
+		cb = (CheckBox)view.findViewById(R.id.check_maximal);
+		cb.setChecked(visible.contains("maximal"));
 
 		builder.setView(view)
 				.setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
@@ -75,13 +95,15 @@ public class EditDialog extends DialogFragment {
 		return this.name;
 	}
 
-	public void loadValues(String defaults, String min, String max){
-		if(defaults!=null)
+	public void loadValues(String defaults, String min, String max, String visible){
+		if(defaults!=null && !defaults.isEmpty() && defaults!="null")
 			this.defaults = defaults;
-		if(min!=null)
+		if(min!=null && !min.isEmpty() && min!="null")
 			this.min = min;
-		if(max!=null)
+		if(max!=null && !max.isEmpty() && max!="null")
 			this.max = max;
+		if(visible!=null && !visible.isEmpty() && visible!="null")
+			this.visible = visible;
 	}
 
 	public boolean hasDefault(){
@@ -123,7 +145,28 @@ public class EditDialog extends DialogFragment {
 		return Integer.parseInt(edit.getText().toString());
 	}
 
-	/* The activity that creates an instance of this dialog fragment must
+    public void setVisible(String visible) {
+	    this.visible = visible;
+	    CheckBox cb = getDialog().findViewById(R.id.check_default);
+        cb.setChecked(visible.contains("default"));
+        cb = getDialog().findViewById(R.id.check_minimal);
+        cb.setChecked(visible.contains("minimal"));
+        cb = getDialog().findViewById(R.id.check_maximal);
+        cb.setChecked(visible.contains("maximal"));
+    }
+    public String getVisible() {
+        CheckBox cb;
+	    StringBuilder sb = new StringBuilder();
+        cb = getDialog().findViewById(R.id.check_default);
+        sb.append(cb.isChecked() ? "-default-" : "");
+        cb = getDialog().findViewById(R.id.check_minimal);
+        sb.append(cb.isChecked() ? "-minimal-" : "");
+        cb = getDialog().findViewById(R.id.check_maximal);
+        sb.append(cb.isChecked() ? "-maximal-" : "");
+        return sb.toString();
+    }
+
+    /* The activity that creates an instance of this dialog fragment must
 	 * implement this interface in order to receive event callbacks.
 	 * Each method passes the DialogFragment in case the host needs to query it. */
 	public interface EditDialogListener {

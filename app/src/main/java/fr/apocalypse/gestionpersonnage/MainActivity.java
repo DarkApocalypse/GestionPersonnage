@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -35,8 +36,6 @@ public class MainActivity extends AppCompatActivity{
 		bp_add.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				DataImageButton self = (DataImageButton)v;
-
 				AddFieldDialog newFragment = new AddFieldDialog();
 				newFragment.listener = new AddFieldDialog.AddFieldDialogListener() {
 					@Override
@@ -103,11 +102,11 @@ public class MainActivity extends AppCompatActivity{
 	}
 
 	private void showCharacter(Character c, LinearLayout l) {
-		Iterator<Map.Entry<String,Integer>> it = c.fields.entrySet().iterator();
+		Iterator<String> it = c.orders.iterator();
 
 		while(it.hasNext())
 		{
-			Map.Entry<String,Integer> entry = it.next();
+			String entry = it.next();
 			LayoutInflater inflater = (LayoutInflater)getBaseContext() .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			LinearLayout main = (LinearLayout)findViewById(R.id.list);
 			View view = inflater.inflate(R.layout.field, null);
@@ -117,32 +116,34 @@ public class MainActivity extends AppCompatActivity{
 			DataImageButton bp_reset = (DataImageButton) view.findViewById(R.id.bp_reset);
 			DataImageButton bp_remove = (DataImageButton) view.findViewById(R.id.bp_remove);
 			StringBuilder sb = new StringBuilder();
-			sb.append(entry.getKey());
+			sb.append(entry);
 			boolean s = false;
-			if(c.hasDefault(entry.getKey()))
+			if(c.hasDefault(entry) && c.defaultVisible(entry))
 			{
-				sb.append("(D:" + c.getDefault(entry.getKey()).toString());
+				sb.append("(D:" + c.getDefault(entry).toString());
 				s = true;
 			}
-			if(c.hasMin(entry.getKey()))
+			if(c.hasMin(entry) && c.minVisible(entry))
 			{
 				if(s)
 					sb.append(", ");
 				else
 					sb.append("(");
-				sb.append("m:" + c.getMin(entry.getKey()).toString());
+				s = true;
+				sb.append("m:" + c.getMin(entry).toString());
 			}
-			if(c.hasMax(entry.getKey()))
+			if(c.hasMax(entry) && c.maxVisible(entry))
 			{
 				if(s)
 					sb.append(", ");
 				else
 					sb.append("(");
-				sb.append("M:" + c.getMax(entry.getKey()).toString());
+				s = true;
+				sb.append("M:" + c.getMax(entry).toString());
 			}
 			if(s)
 				sb.append(")");
-			sb.append(": " + entry.getValue());
+			sb.append(": " + c.fields.get(entry));
 			tv.setText(sb.toString());
 
 			bp_add.setOnClickListener(new View.OnClickListener() {
@@ -171,7 +172,7 @@ public class MainActivity extends AppCompatActivity{
 
 				}
 			});
-			bp_add.setData(entry.getKey());
+			bp_add.setData(entry);
 
 			bp_edit.setOnClickListener(new View.OnClickListener() {
 				@Override
@@ -181,11 +182,12 @@ public class MainActivity extends AppCompatActivity{
 					EditDialog newFragment = new EditDialog();
 					String[] d = self.data.split("\\|");
 					newFragment.setName(d[0]);
-					newFragment.loadValues(d[1],d[2],d[3]);
+					newFragment.loadValues(d[1],d[2],d[3], d[4]);
 					newFragment.listener = new EditDialog.EditDialogListener() {
 						@Override
 						public void onDialogPositiveClick(DialogFragment dialog) {
 							EditDialog self = ((EditDialog)dialog);
+							CheckBox cb;
 
 							String name = self.getName();
 							int value; boolean good = true;
@@ -220,6 +222,7 @@ public class MainActivity extends AppCompatActivity{
 								good = MainActivity.this.c.unsetMax(name);
 							}
 							Log.d("editDialog", "is it good?" + (good ? "true" : "false"));
+							MainActivity.this.c.setVisible(name, self.getVisible());
 							refresh();
 						}
 
@@ -231,7 +234,7 @@ public class MainActivity extends AppCompatActivity{
 					newFragment.show(getSupportFragmentManager(), "editDialog");
 				}
 			});
-			bp_edit.setData(entry.getKey() + "|" + c.getDefault(entry.getKey()) + "|" + c.getMin(entry.getKey()) + "|" + c.getMax(entry.getKey()));
+			bp_edit.setData(entry + "|" + c.getDefault(entry) + "|" + c.getMin(entry) + "|" + c.getMax(entry) + "|" + c.getVisible(entry));
 
 			bp_reset.setOnClickListener(new View.OnClickListener() {
 				@Override
@@ -242,7 +245,7 @@ public class MainActivity extends AppCompatActivity{
 					MainActivity.this.refresh();
 				}
 			});
-			bp_reset.setData(entry.getKey());
+			bp_reset.setData(entry);
 			bp_remove.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
@@ -252,14 +255,13 @@ public class MainActivity extends AppCompatActivity{
 					MainActivity.this.refresh();
 				}
 			});
-			bp_remove.setData(entry.getKey());
+			bp_remove.setData(entry);
 
 			main.addView(view, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
 		}
 	}
 
-	private void refresh()
-	{
+	private void refresh() {
 		LinearLayout ll = (LinearLayout)findViewById(R.id.list);
 		ll.removeAllViews();
 		showCharacter(c, ll);

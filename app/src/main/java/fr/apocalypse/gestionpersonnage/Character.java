@@ -6,6 +6,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -15,11 +16,15 @@ public class Character {
 	HashMap<String, Integer> defaults;
 	HashMap<String, Integer> min;
 	HashMap<String, Integer> max;
+	ArrayList<String> orders;
+	HashMap<String, String> visibles;
 	public Character(){
 		fields = new HashMap<>();
 		defaults = new HashMap<>();
 		min = new HashMap<>();
 		max = new HashMap<>();
+		orders = new ArrayList<>();
+		visibles = new HashMap<>();
 	}
 	public boolean addField(String name){
 		return addField(name,0);
@@ -28,6 +33,7 @@ public class Character {
 		if(!fields.containsKey(name))
 		{
 			fields.put(name, Integer.valueOf(value));
+			orders.add(name);
 			return true;
 		}
 		return false;
@@ -85,6 +91,9 @@ public class Character {
 	public boolean removeField(String name){
 		if(fields.containsKey(name)) {
 			fields.remove(name);
+			Log.d("GESTION-PERSONNAGE", String.format("length before: %d", orders.size()));
+			orders.remove(name);
+			Log.d("GESTION-PERSONNAGE", String.format("length after: %d", orders.size()));
 			if(defaults.containsKey(name)) {
 				defaults.remove(name);
 			}
@@ -146,6 +155,17 @@ public class Character {
 				String name = it.next();
 				setMax(name, sub.getInt(name));
 			}
+			JSONArray jsonArray = jsonObject.getJSONArray("orders");
+			orders.clear();
+			for(int i = 0; i < jsonArray.length(); i++){
+				orders.add((String)jsonArray.get(i));
+			}
+			sub = jsonObject.getJSONObject("visibles");
+			it = sub.keys();
+			while(it.hasNext()){
+				String name = it.next();
+				setVisible(name, sub.getString(name));
+			}
 
 		}
 		catch (Exception e){
@@ -185,6 +205,15 @@ public class Character {
 				sub.put(entry.getKey(), entry.getValue());
 			}
 			jsonObject.put("max", sub);
+			jsonObject.put("orders", new JSONArray(orders));
+			sub = new JSONObject();
+			for (Iterator<Map.Entry<String, String>> it = visibles.entrySet().iterator(); it.hasNext(); ) {
+				Map.Entry<String, String> entry = it.next();
+
+				sub.put(entry.getKey(), entry.getValue());
+			}
+			Log.d("JSON-SERIALIZE", sub.toString(4));
+			jsonObject.put("visibles", sub);
 
 		}
 		catch (Exception e){
@@ -226,5 +255,25 @@ public class Character {
 	}
 	public Integer getMax(String key) {
 		return max.get(key);
+	}
+	public boolean hasVisible(String key) {
+		return visibles.containsKey(key);
+	}
+	public String getVisible(String key) {
+		return visibles.get(key) + "-";
+	}
+
+	public boolean defaultVisible(String key){
+		return visibles.containsKey(key) && visibles.get(key).contains("default");
+	}
+	public boolean minVisible(String key){
+		return visibles.containsKey(key) && visibles.get(key).contains("min");
+	}
+	public boolean maxVisible(String key){
+		return visibles.containsKey(key) && visibles.get(key).contains("max");
+	}
+
+	public void setVisible(String name, String visible) {
+		visibles.put(name, visible);
 	}
 }
