@@ -212,7 +212,6 @@ public class Character {
 
 				sub.put(entry.getKey(), entry.getValue());
 			}
-			Log.d("JSON-SERIALIZE", sub.toString(4));
 			jsonObject.put("visibles", sub);
 
 		}
@@ -275,5 +274,19 @@ public class Character {
 
 	public void setVisible(String name, String visible) {
 		visibles.put(name, visible);
+	}
+
+	public void orderFromJson(String result) {
+		orders.clear();
+
+		try {
+			JSONArray sub = new JSONArray(result);
+			for(int i=0; i < sub.length(); i++){
+				orders.add((String)sub.get(i));
+			}
+		}
+		catch (Exception exp){
+
+		}
 	}
 }

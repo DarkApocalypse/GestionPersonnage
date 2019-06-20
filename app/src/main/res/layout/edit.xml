@@ -64,12 +64,14 @@
 			android:layout_marginEnd="8dp"
 			android:layout_marginRight="8dp"
 			android:layout_marginBottom="8dp"
+			android:width="96dp"
 			android:ems="10"
+			android:importantForAutofill="no"
 			android:inputType="numberSigned"
 			app:layout_constraintBottom_toBottomOf="parent"
 			app:layout_constraintEnd_toStartOf="@+id/check_default"
 			app:layout_constraintTop_toTopOf="parent"
-			android:importantForAutofill="no" tools:targetApi="o" />
+			tools:targetApi="o" />
 
 		<CheckBox
 			android:id="@+id/check_default"
@@ -110,12 +112,14 @@
 			android:layout_marginEnd="8dp"
 			android:layout_marginRight="8dp"
 			android:layout_marginBottom="8dp"
+			android:width="96dp"
 			android:ems="10"
+			android:importantForAutofill="no"
 			android:inputType="numberSigned"
 			app:layout_constraintBottom_toBottomOf="parent"
 			app:layout_constraintEnd_toStartOf="@+id/check_minimal"
 			app:layout_constraintTop_toTopOf="parent"
-			android:importantForAutofill="no" tools:targetApi="o" />
+			tools:targetApi="o" />
 
 		<CheckBox
 			android:id="@+id/check_minimal"
@@ -157,12 +161,14 @@
 			android:layout_marginEnd="8dp"
 			android:layout_marginRight="8dp"
 			android:layout_marginBottom="8dp"
+			android:width="96dp"
 			android:ems="10"
+			android:importantForAutofill="no"
 			android:inputType="numberSigned"
 			app:layout_constraintBottom_toBottomOf="parent"
 			app:layout_constraintEnd_toStartOf="@+id/check_maximal"
 			app:layout_constraintTop_toTopOf="parent"
-			android:importantForAutofill="no" tools:targetApi="o" />
+			tools:targetApi="o" />
 
 		<CheckBox
 			android:id="@+id/check_maximal"

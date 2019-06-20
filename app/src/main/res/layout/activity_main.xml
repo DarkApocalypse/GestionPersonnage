@@ -29,6 +29,13 @@
             android:layout_weight="1"
             android:text="@string/reset" />
 
+        <Button
+            android:id="@+id/bp_order"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="order" />
+
     </LinearLayout>
 
     <ScrollView

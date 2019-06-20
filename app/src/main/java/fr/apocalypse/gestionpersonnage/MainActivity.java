@@ -1,6 +1,7 @@
 package fr.apocalypse.gestionpersonnage;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
@@ -16,8 +17,11 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.json.JSONArray;
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -81,7 +85,16 @@ public class MainActivity extends AppCompatActivity{
 				}
 			}
 		});
+		Button bp_order = (Button)findViewById(R.id.bp_order);
+		bp_order.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
 
+				Intent intent = new Intent(MainActivity.this, OrderFields.class);
+				intent.putExtra("JSON", c.serialize());
+				startActivityForResult(intent, 1);
+			}
+		});
 		c = loadCharacter();
 		showCharacter(c, ll);
 	}
@@ -288,5 +301,23 @@ public class MainActivity extends AppCompatActivity{
 			c.setMax("PV", 20);
 		}
 		return c;
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		Log.d("ORDER", "recovering..." + requestCode + " " +resultCode);
+
+		if (requestCode == 1 && resultCode == 1){
+			String result = data.getStringExtra("order");
+			Log.d("ORDER recover", result);
+			try{
+				c.orderFromJson(result);
+				refresh();
+			}
+			catch (Exception exp){
+
+			}
+		}
+		Log.d("ORDER", "recovery finished");
 	}
 }
